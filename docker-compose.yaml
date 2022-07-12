@@ -1,0 +1,92 @@
+# Environment Variables
+# --------------------------------------------------
+# REDIS_PASSWPORD
+# MEILI_MASTER_KEY
+version: "3"
+services:
+  strapi:
+    container_name: strapi
+    build: .
+    image: mystrapi:latest
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_CLIENT: ${DATABASE_CLIENT}
+      DATABASE_HOST: strapiDB
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PORT: ${DATABASE_PORT}
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      NODE_ENV: ${NODE_ENV}
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:-masterKey}
+    volumes:
+      - ./config:/opt/app/config
+      - ./src:/opt/app/src
+      - ./package.json:/opt/package.json
+      - ./package-lock.json:/opt/package-lock.json
+      - ./.env:/opt/app/.env
+    ports:
+      - "1337:1337"
+    networks:
+      - strapi
+    depends_on:
+      - strapiDB
+      - meilisearch
+
+  redis-cache:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 60 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
+    volumes: 
+      - cache:/data
+
+  strapiDB:
+    image: postgres:12.0-alpine
+    container_name: strapiDB
+    platform: linux/amd64 #for platform error on Apple M1 chips
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    volumes:
+      - strapi-data:/var/lib/postgresql/data/ #using a volume
+      #- ./data:/var/lib/postgresql/data/ # if you want to use a bind folder
+    expose:
+      - "5432"
+    networks:
+      - strapi
+
+  meilisearch:
+    container_name: meilisearch
+    image: getmeili/meilisearch:v0.25.2
+    environment:
+      - http_proxy
+      - https_proxy
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY:-masterKey}
+      - MEILI_NO_ANALYTICS=${MEILI_NO_ANALYTICS:-true}
+      - MEILI_ENV=${MEILI_ENV:-development}
+      - MEILI_LOG_LEVEL
+      - MEILI_DB_PATH=${MEILI_DB_PATH:-/data.ms}
+    ports:
+      - 7700:7700
+    networks:
+      - strapi
+    volumes:
+      - ./data.ms:/data.ms
+    restart: unless-stopped
+
+volumes:
+    strapi-data:
+    cache:
+
+
+networks:
+  strapi:
+    name: Strapi
+    driver: bridge
