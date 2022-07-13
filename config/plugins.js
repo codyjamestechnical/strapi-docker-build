@@ -5,7 +5,7 @@ module.exports = ({env}) => ({
     meilisearch: {
         config: {
         // Your meili host
-        host: "127.0.0.1:7700",
+        host: "http://strapi:7700",
         // Your master key or private key
         apiKey: env("MEILI_MASTER_KEY", "masterKey"),
         },
