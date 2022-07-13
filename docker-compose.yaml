@@ -59,7 +59,7 @@ services:
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_DB: ${DATABASE_NAME}
     volumes:
-      - strapi-data:/var/lib/postgresql/data/ #using a volume
+      - ./strapi-data:/var/lib/postgresql/data/ #using a volume
       #- ./data:/var/lib/postgresql/data/ # if you want to use a bind folder
     expose:
       - "5432"
@@ -82,7 +82,7 @@ services:
     networks:
       - strapi
     volumes:
-      - ./data.ms:/data.ms
+      - ./meilisearch/data.ms:/data.ms
     restart: unless-stopped
 
 volumes:
