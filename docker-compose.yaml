@@ -75,8 +75,7 @@ services:
       - MEILI_ENV=${MEILI_ENV:-development}
       - MEILI_LOG_LEVEL
       - MEILI_DB_PATH=${MEILI_DB_PATH:-/data.ms}
-    ports:
-      - 7600:7700
+
     expose:
       - "7700"
     networks:
