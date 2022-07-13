@@ -45,6 +45,8 @@ services:
     command: redis-server --save 60 1 --loglevel warning --requirepass ${REDIS_PASSWORD:-redispass}
     volumes: 
       - cache:/data
+    networks:
+      - strapi
 
   strapiDB:
     image: postgres:12.0-alpine
@@ -77,6 +79,8 @@ services:
       - MEILI_DB_PATH=${MEILI_DB_PATH:-/data.ms}
     ports:
       - '7700:7700'
+    networks:
+      - strapi
     volumes:
       - ./data.ms:/data.ms
     restart: unless-stopped
