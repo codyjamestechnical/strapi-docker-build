@@ -76,7 +76,7 @@ services:
       - MEILI_LOG_LEVEL
       - MEILI_DB_PATH=${MEILI_DB_PATH:-/data.ms}
     ports:
-      - 7700:7700
+      - 7600:7700
     expose:
       - "7700"
     networks:
