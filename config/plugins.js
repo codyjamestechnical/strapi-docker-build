@@ -2,6 +2,7 @@
 
 module.exports = ({env}) => ({
   //...
+  console.log(env("MEILI_MASTER_KEY", "masterkey"));
     meilisearch: {
         config: {
         // Your meili host
