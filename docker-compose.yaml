@@ -85,6 +85,18 @@ services:
       - ./meilisearch/data.ms:/data.ms
     restart: unless-stopped
 
+  nginx-proxy:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    networks:
+      - strapi
+    volumes:
+      - ./nginx-data:/data
+      - ./letsencrypt:/etc/letsencrypt
 volumes:
     strapi-data:
     cache:
